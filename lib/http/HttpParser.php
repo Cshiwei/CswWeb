@@ -65,8 +65,8 @@ class HttpParser {
         $arr = explode(' ',$strRow);
 
         $this->method = $arr[0];
-        $this->url = $arr[1];
-        $this->protocol = $arr[2];
+        $this->url = isset($arr[1]) ? $arr[1] : '';
+        $this->protocol = isset($arr[2]) ? $arr[2] : '';
 
         $this->setRealUrl($this->url);
         $this->setKeyValue($this->url);

@@ -9,7 +9,7 @@
 require('lib/WebServer.php');
 
 $port = 8090;
-$webServer = new WebServer($port);
+$webServer = new WebServer($port,$argv);
 $webServer->exe();
 
 

@@ -13,6 +13,8 @@ class HttpJob {
 
     private $request;
 
+    private $type;
+
     private $requestArr;
 
     private $config;
@@ -54,8 +56,10 @@ class HttpJob {
             {
                 $filePath = $webRoot.$arr[0];
                 if(file_exists($filePath))
+                {
+                    $this->type = $val;
                     return $filePath;
-
+                }
                 return 404;
             }
         }
@@ -83,46 +87,21 @@ class HttpJob {
 
     private function response($filePath)
     {
-        $httpBulider = new HttpBuilder();
-
         switch($filePath)
         {
             case '404' :
-                $body = $this->getPublicHtml('404');
-                $headerArr = array(
-                    'Content-Type' => 'text/html',
-                    'Connection'   => 'keep-alive',
-                    'Content-Length'=> strlen($body),
-                );
-                $httpBulider->setStatus('404')
-                            ->setHttpHeader($headerArr)
-                            ->setHttpBody($body);
+                $res = $this->getPublicHtml('404');
                 break;
+
             case '403' :
-                $body = $this->getPublicHtml('403');
-                $headerArr = array(
-                    'Content-Type' => 'text/html',
-                    'Connection'   => 'keep-alive',
-                    'Content-Length'=> strlen($body),
-                );
-                $httpBulider->setStatus('403')
-                            ->setHttpHeader($headerArr)
-                            ->setHttpBody($body);
+                $res = $this->getPublicHtml('403');
                 break;
 
             default :
-                $body = $this->getFileContent($filePath);
-                $headerArr = array(
-                    'Content-Type' => 'text/html',
-                    'Connection'   => 'keep-alive',
-                    'Content-Length'=> strlen($body),
-                );
-                $httpBulider->setStatus('200')
-                            ->setHttpHeader($headerArr)
-                            ->setHttpBody($body);
+                $res = $this->getFileContent($filePath);
         }
 
-        return $httpBulider->getHttpStr();
+        return $res;
     }
 
     private function getPublicHtml($status)
@@ -135,16 +114,51 @@ class HttpJob {
         }
         $file = file_get_contents($filepath);
 
-        return $file;
+        $httpBulider = new HttpBuilder();
+        $body = $file;
+        $headerArr = array(
+            'Content-Type' => 'text/html',
+            'Connection'   => 'keep-alive',
+            'Content-Length'=> strlen($body),
+        );
+        $httpBulider->setStatus('404')
+            ->setHttpHeader($headerArr)
+            ->setHttpBody($body);
+
+        return $httpBulider->getHttpStr();
     }
 
     private function getFileContent($filePath)
     {
-       // $fileContent = file_get_contents($filePath);
         ob_start();
         include($filePath);
-        $response = ob_get_flush();
-        return $response;
+        $response = ob_get_contents();
+        ob_end_clean();
+
+        $body = $response;
+        switch($this->type)
+        {
+            case 'jpg' :
+                $headerArr = array(
+                    'Connection'   => 'keep-alive',
+                    'Content-Length'=> strlen($body),
+                );
+                break;
+
+            default :
+                $headerArr = array(
+                    'Content-Type' => 'text/html',
+                    'Connection'   => 'keep-alive',
+                    'Content-Length'=> strlen($body),
+                );
+        }
+
+        $httpBuilder = new HttpBuilder();
+        $httpBuilder->setStatus('200')
+                    ->setHttpHeader($headerArr)
+                    ->setHttpBody($body);
+
+        return $httpBuilder->getHttpStr();
     }
 
 }

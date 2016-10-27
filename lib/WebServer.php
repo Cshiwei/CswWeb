@@ -11,6 +11,8 @@ require('socket/SocketServer.php');
 
 class WebServer {
 
+    private $type;
+
     /**web服务器的监听端口
      * @var
      */
@@ -21,13 +23,37 @@ class WebServer {
      */
     private $webDoc;
 
-    public function __construct($port)
+    public function __construct($port,$argv)
     {
         $this->port = $port;
+        $this->getParams($argv);
         $this->httpJob = new HttpJob();
     }
 
     public function exe()
+    {
+        switch($this->type)
+        {
+            case 'damon' :
+                $pid = pcntl_fork();
+                if($pid)
+                {
+                    echo "以守护进程方式运行...\n";
+                    echo "PID:\n";
+                    echo "{$pid}\n";
+                }
+                else
+                {
+                    $this->job();
+                }
+                break;
+
+            default :
+                $this->job();
+        }
+    }
+
+    private function job()
     {
         $sock = new SocketServer($this->port);
         $sock->exe();
@@ -46,7 +72,6 @@ class WebServer {
             }while(true);
         }
     }
-
     /**
      * @param mixed $webDoc
      */
@@ -59,5 +84,13 @@ class WebServer {
     {
         $httpParser = new HttpParser($request);
 
+    }
+
+    private function getParams($argv)
+    {
+        if(isset($argv[1]) && $argv[1]=='-d')
+        {
+            $this->type = 'damon';
+        }
     }
 }

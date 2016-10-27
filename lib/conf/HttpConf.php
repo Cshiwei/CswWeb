@@ -13,4 +13,4 @@ $_config['webRoot'] = '/home/www/svnwww/';
 $_config['defIndex'] = array('index.php','index.html');
 
 //允许访问的文件类型
-$_config['allowFile'] = array('php','html');
+$_config['allowFile'] = array('php','html','jpg');
