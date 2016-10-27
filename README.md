@@ -9,10 +9,11 @@
   
   2.接下来需要更改一下配置文件，所有的配置文件位于lib/conf目录下,HttpConf.php保存的是web服务器相关配置，HttpStatus.php保存的是http协议状态码对应含义
   .需要更改一下网站的根目录，默认访问页面和允许访问的文件类型。<br>
-  `$_config['wwwRoot']={your webroot}
-  $_config['defIndex']={your Index}
-  $_config['allowFile']={your allow}`
-  只需要命令行启动，运行index.php即可<br>
+  `$_config['wwwRoot']={your webroot}`<br>
+  `$_config['defIndex']={your Index}`<br>
+  `$_config['allowFile']={your allow}`<br>
+  
+  3.配置更改完成后，只需要命令行启动，运行index.php即可<br>
   就像这样`php index.php`<br> 不加参数表示调试模式启动，你可以在代码里添加调试信息，会直接显示在终端。<br>
   <br>
   如果加上参数`php index.php -d` 就会以守护进程方式启动,系统会打印出web服务的进程ID，方便随时Kil
