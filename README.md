@@ -38,4 +38,4 @@
   
   3.确保你的PHP版本支持socket。
  
-  
+  ##Just for fun :)
